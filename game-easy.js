@@ -18,8 +18,6 @@ window.onload = function () {
     }, false);
 
     function showBtnAnimation() {
-        event.preventDefault();
-
         startBtn.classList.add('animate');
         // 按钮动画延时，按钮动画结束后发生的事：换为正常状态（class中的animate去掉），开始按钮消失
         setTimeout(() => {
@@ -35,6 +33,12 @@ window.onload = function () {
 
         setTimeout(() => {
             // TODO: 写当游戏时间结束后要发生的事
+            setTimeout(() => {
+                startBtn.removeAttribute("style");
+                titleH1.innerHTML = "TIME UP!"
+                startBtn.innerHTML = "Replay"
+                timeUp = true;
+            }, 700)
         }, gameTime)
     }
 
@@ -43,6 +47,9 @@ window.onload = function () {
      */
     function resetScoreAndTime() {
         // TODO: 写游戏的初始化设置
+        titleH1.innerHTML = "WHACK-A-MOLE!";
+        scoreBoard.innerHTML = 0;
+        score = 0;
     }
 
     /**
@@ -63,7 +70,7 @@ window.onload = function () {
      */
     function randomTime(min, max) {
         // TODO: 写生成随机数的逻辑，
-        return 0;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     /**
@@ -74,7 +81,13 @@ window.onload = function () {
      */
     function randomHole(holes) {
         // TODO: 写地鼠随机选择钻出地洞的逻辑，如果与上一个是相同地洞，则重新选择一个地洞.
-        return null;
+        var str = Math.floor((Math.random() * 6));
+        if (lastHole == str) {
+            randomHole(holes);
+        } else {
+            lastHole = str;
+        }
+        return holes[str];
     }
 
     /**
@@ -85,6 +98,14 @@ window.onload = function () {
      */
     function comeOutAndStop(hole, time) {
         // TODO: 写地鼠出洞并停留相应时间，如果游戏时间未结束(timeUp)，继续出洞(peep).
+        hole.classList.add("up");
+        setTimeout(() => {
+            hole.classList.remove('up');
+            if (!timeUp) {
+                peep();
+            }
+        }, time);
+        timeUp = false;
     }
 
     /**
@@ -92,6 +113,8 @@ window.onload = function () {
      */
     moles.forEach(mole => mole.addEventListener('click', function (e) {
         // TODO: 在这里写用户点击地鼠发生的事.
+        mole.parentElement.classList.remove('up');
+        scoreBoard.innerHTML = ++score;
     }));
 
 };
